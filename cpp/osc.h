@@ -1,7 +1,6 @@
 #ifndef OSC_H
 #define OSC_H
 
-	#define _WIN32_WINNT 0x501
 	#define OSCPKT_OSTREAM_OUTPUT
 	#include "oscpkt/oscpkt.hh"
 	#include "oscpkt/udp.hh"

@@ -8,6 +8,9 @@ add_definitions(
 	-g
 )
 
+if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+	set(EXTRA_SYS_LIBS wsock32 Ws2_32 comdlg32)
+endif()
 
 link_directories(
 	${SDL2_LIBRARY_DIR}
@@ -18,7 +21,6 @@ include_directories(
 	${SDL2_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 )
-
 
 file(GLOB SOURCES ./*.cpp)
 
@@ -31,6 +33,7 @@ target_link_libraries(
 	algaudio
 	${SDL2_LIBRARY}
 	${SDL2_TTF_LIBRARY}
+	${EXTRA_SYS_LIBS}
 )
 
 add_custom_command(
