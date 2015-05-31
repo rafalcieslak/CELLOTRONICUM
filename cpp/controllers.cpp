@@ -30,9 +30,9 @@ void Controller::saveData(FILE* file)
 {
 	fprintf(file, "%d %d ", posX, posY);
 	
-	for(auto it=controlledValueGifters.begin();it!=controlledValueGifters.end();++it)
+	for(auto p : controlledValueGifters)
 	{
-		fprintf(file, "%d %d %d ", it->first, it->second->effect->getId(), it->second->argument);
+		fprintf(file, "%d %d %d ", p.first, p.second->effect->getId(), p.second->argument);
 	}
 }
 

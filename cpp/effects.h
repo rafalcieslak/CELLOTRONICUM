@@ -180,17 +180,15 @@
 		void calculateWidth() 
 		{
 			if(submenuEntries==NULL) return;
-			for(auto it=submenuEntries->begin();it!=submenuEntries->end();++it)
+			for(auto submenuEntry : *submenuEntries)
 			{
 				int w;
-				SDL_QueryTexture((*it)->nameTex, NULL, NULL, &w, NULL);
+				SDL_QueryTexture(submenuEntry->nameTex, NULL, NULL, &w, NULL);
 				width=std::max(width, w);
 			}
 			
-			for(auto it=submenuEntries->begin();it!=submenuEntries->end();++it)
-			{
-				(*it)->calculateWidth();
-			}
+			for(auto submenuEntry : *submenuEntries)
+				submenuEntry->calculateWidth();
 		}
 		
 		///Konstruktor. Parametry kolejno: nazwa, wierzchołek ojciec, czy jest elementem (jeżeli jest to jego nazwa musi pokrywać się z jakimś efektem lub kontrolerem)

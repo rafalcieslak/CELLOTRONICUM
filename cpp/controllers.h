@@ -114,10 +114,10 @@ class Controller{
 	void step()
 	{
 		if(paused) return;
-		for(auto it=controlledValueGifters.begin();it!=controlledValueGifters.end();++it)
+		for(auto &p : controlledValueGifters)
 		{
-			if(valueIsReady(it->first))
-			it->second->setNormalizedValue(getValue(it->first));
+			if(valueIsReady(p.first))
+			p.second->setNormalizedValue(getValue(p.first));
 		}
 	}
 	
@@ -145,15 +145,11 @@ class Controller{
 	
 	virtual ~Controller()
 	{
-		for(unsigned int i=0;i<outBuses.size();++i)
-		{
-			controllerByBus.erase(outBuses[i].bus);
-		}
-		
-		for(auto it=controlledValueGifters.begin();it!=controlledValueGifters.end();++it)
-		{
-			it->second->controlledBy=NULL;
-		}
+		for(auto outbus : outBuses)
+			controllerByBus.erase(outbus.bus);
+      
+		for(auto &p : controlledValueGifters)
+			p.second->controlledBy=NULL;
 		
 		getControllerInstanceList()->erase(id);
 		
@@ -165,10 +161,9 @@ class Controller{
 	///ustawia pozycję okna (lewy górny róg)
 	void setPos(int X, int Y)
 	{
-		for(unsigned int i=0;i<outBuses.size();++i)
-		{
-			outBuses[i].bus->move(X-posX, Y-posY);
-		}
+		for(auto &outbus : outBuses)
+			outbus.bus->move(X-posX, Y-posY);
+      
 		pauseButton->move(X-posX, Y-posY);
 		posX=X;
 		posY=Y;
@@ -205,9 +200,9 @@ class Controller{
 			return true;
 		}
 		
-		for(unsigned int i=0;i<outBuses.size();++i)
+		for(auto &outbus : outBuses)
 		{
-			if(outBuses[i].bus->receiveClick(X, Y, me)) return true;
+			if(outbus.bus->receiveClick(X, Y, me)) return true;
 		}
 		
 		return false;
@@ -215,10 +210,9 @@ class Controller{
 	
 	bool receiveSecondClick(int X, int Y, MouseEvent me)
 	{
-		for(unsigned int i=0;i<outBuses.size();++i)
-		{
-			if(outBuses[i].bus->receiveSecondClick(X, Y, me)) return true;
-		}
+		for(auto &outbus : outBuses)
+			if(outbus.bus->receiveSecondClick(X, Y, me)) return true;
+      
 		if(me==ME_PRESS)
 		{
 			if(posX<=X && X<=posX+width && posY<=Y && Y<=posY+height)
@@ -249,10 +243,11 @@ class Controller{
 	{
 		if(posX<=X && X<=posX+width && posY<=Y && Y<=posY+height && me==ME_PRESS)
 		{
-			for(unsigned int i=0;i<outBuses.size();++i)
-			{
-				outBuses[i].free();
-			}
+			for(auto &outbus : outBuses)
+				outbus.free();
+        
+      // FIXME: Even if this deleting this happens to seem safe, such memory
+      // management is never a transparent approach.
 			delete this;
 			return true;
 		}
@@ -284,15 +279,13 @@ class Controller{
 		pauseButton->setSymbol(int(isPaused()));
 		pauseButton->draw();
 		
-		for(unsigned int i=0;i<outBuses.size();++i)
+		for(auto &outbus : outBuses)
+			outbus.draw();
+      
+    for(auto &p : controlledValueGifters)
 		{
-			outBuses[i].draw();
-		}
-		
-		for(auto it=controlledValueGifters.begin();it!=controlledValueGifters.end();++it)
-		{
-			ControllBus* bus=outBuses[it->first].bus;
-			ValueGifter* valueGifter=it->second;
+			ControllBus* bus=outBuses[p.first].bus;
+			ValueGifter* valueGifter=p.second;
 			
 			if(bus->getPosY()+ControllBus::size/2 <= valueGifter->getPosY() + valueGifter->getHeight()/2)
 			SDL_RenderDrawLine(render, bus->getPosX()+ControllBus::size/2, bus->getPosY()+ControllBus::size/2,

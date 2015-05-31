@@ -2,6 +2,7 @@
 #include <cstring>
 #include <chrono>
 #include <thread>
+#include <iterator>
 #include "osc.h"
 #include "effects.h"
 #include "effectsdef.h"
@@ -19,6 +20,46 @@ void waitFor(int ms)
 
 ///bufor do przechowania stringu z nazwą pliku
 char fileStr[MAX_PATH];
+
+// GCC 4.9 is missing some C++14 features, this is a simple fake implementation
+// of make_reverse_iterator. This can be removed in the future, when all then-
+// -current versions of GCC will have this issue solved.
+#if __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
+		namespace std{
+			template <typename I>
+			reverse_iterator<I> make_reverse_iterator (I i)
+			{
+			    return std::reverse_iterator<I> { i };
+			}
+		}
+#endif
+
+// Iterator access templates for ranges
+template<class T>
+T begin(std::pair<T, T> p)
+{
+    return p.first;
+}
+template<class T>
+T end(std::pair<T, T> p)
+{
+    return p.second;
+}
+
+// An adapter for reversing iteration range. This will be probably available in C++17.
+template<class OriginalRangeType>
+std::pair< 
+          std::reverse_iterator< decltype(begin( std::declval<OriginalRangeType>() )) >,
+          std::reverse_iterator< decltype(begin( std::declval<OriginalRangeType>() )) >
+         >
+     reverse_range(OriginalRangeType&& range)
+{
+    return std::make_pair(
+			std::make_reverse_iterator(begin(range)), // C++14
+			std::make_reverse_iterator( end(range) )
+		);
+}
+
 
 ///sprawdza sygnały z myszy i klawiatury i wykonuje odpowiednie rzeczy
 bool checkInputs()
@@ -43,28 +84,24 @@ bool checkInputs()
 					int y=event.button.y;
 					if(event.button.button==SDL_BUTTON_LEFT && !(state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT]) && !(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL]))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							if(it->second->receiveClick(x, y, ME_PRESS))break;
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							if(eff.second->receiveClick(x, y, ME_PRESS))
+								break;
 						
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							if(it->second->receiveClick(x, y, ME_PRESS))break;
-						}
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							if(cont.second->receiveClick(x, y, ME_PRESS))
+								break;
 					}
 					else
 					if(event.button.button==SDL_BUTTON_RIGHT || (event.button.button==SDL_BUTTON_LEFT && (state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT])))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							if(it->second->receiveSecondClick(x, y, ME_PRESS))break;
-						}
-						
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							if(it->second->receiveSecondClick(x, y, ME_PRESS))break;
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							if(eff.second->receiveSecondClick(x, y, ME_PRESS))
+								break;
+								
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							if(cont.second->receiveSecondClick(x, y, ME_PRESS))
+								break;
 					}
 					else
 					if(event.button.button==SDL_BUTTON_MIDDLE || (event.button.button==SDL_BUTTON_LEFT && (state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])))
@@ -91,26 +128,20 @@ bool checkInputs()
 					int y=event.button.y;
 					if(event.button.button==SDL_BUTTON_LEFT && !(state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT]) && !(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL]))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							it->second->receiveClick(x, y, ME_RELEASE);
-						}
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							it->second->receiveClick(x, y, ME_RELEASE);
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							eff.second->receiveClick(x, y, ME_RELEASE);
+							
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							cont.second->receiveClick(x, y, ME_RELEASE);
 					}
 					else
 					if(event.button.button==SDL_BUTTON_RIGHT || (event.button.button==SDL_BUTTON_LEFT && (state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT])))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							it->second->receiveSecondClick(x, y, ME_RELEASE);
-						}
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							it->second->receiveSecondClick(x, y, ME_RELEASE);
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							eff.second->receiveSecondClick(x, y, ME_RELEASE);
+							
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							cont.second->receiveSecondClick(x, y, ME_RELEASE);
 					}
 					else
 					if(event.button.button==SDL_BUTTON_MIDDLE || (event.button.button==SDL_BUTTON_LEFT && (state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])))
@@ -136,26 +167,24 @@ bool checkInputs()
 					int y=event.button.y;
 					if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && !(state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT]) && !(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL]))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							if(it->second->receiveClick(x, y, ME_REPEAT))break;
-						}
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							if(it->second->receiveClick(x, y, ME_REPEAT))break;
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							if(it->second->receiveClick(x, y, ME_REPEAT))
+								break;
+							
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							if(it->second->receiveClick(x, y, ME_REPEAT))
+								break;
 					}
 					else
 					if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT) || (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && (state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT])))
 					{
-						for(auto it=effectInstanceList->rbegin();it!=effectInstanceList->rend();++it)
-						{
-							if(it->second->receiveSecondClick(x, y, ME_REPEAT))break;
-						}
-						for(auto it=controllerInstanceList->rbegin();it!=controllerInstanceList->rend();++it)
-						{
-							if(it->second->receiveSecondClick(x, y, ME_REPEAT))break;
-						}
+						for(auto &eff : reverse_range(*effectInstanceList))
+							if(it->second->receiveSecondClick(x, y, ME_REPEAT))
+								break;
+							
+						for(auto &cont : reverse_range(*controllerInstanceList))
+							if(it->second->receiveSecondClick(x, y, ME_REPEAT))
+								break;
 					}
 					else
 					if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_MIDDLE) || (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && (state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL])))

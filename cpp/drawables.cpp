@@ -29,10 +29,10 @@ std::set <std::pair <Bus*, Bus*> >* getConnections() {return &connections;}
 void drawConnections()
 {
 	setColor(COLOR_CONNECTION_LINE);
-	for(auto it=connections.begin();it!=connections.end();++it)
+	for(auto &conn : connections)
 	{
-		SDL_RenderDrawLine(render, (*it).first->getPosX()+Bus::size/2, (*it).first->getPosY()+Bus::size/2,
-								   (*it).second->getPosX()+Bus::size/2, (*it).second->getPosY()+Bus::size/2);
+		SDL_RenderDrawLine(render, conn.first->getPosX()+Bus::size/2, conn.first->getPosY()+Bus::size/2,
+											 conn.second->getPosX()+Bus::size/2, conn.second->getPosY()+Bus::size/2);
 	}
 	
 	if(Bus::lastClicked!=-1 && (ControllBus::lastClicked!=-1 || ValueGifter::lastClicked!=-1))
@@ -303,15 +303,16 @@ bool ControllBus::connectControllBusWithValueGifter()
 		
 		if(valueGifter->controlledBy!=NULL)
 		{	
-			for(unsigned int whichBus=0;whichBus<controller->outBuses.size();++whichBus)
+			for(auto& outbus : controller->outBuses)
 			{
-				if(controller->outBuses[whichBus].bus==controllBus) break;
+				if(outbus.bus==controllBus) break;
 			}
 			
 			for(auto it=controller->controlledValueGifters.begin();it!=controller->controlledValueGifters.end();++it)
 			{
 				if(it->second==valueGifter)
 				{
+					// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
 					controller->controlledValueGifters.erase(it);
 					valueGifter->controlledBy=NULL;
 					break;
@@ -375,6 +376,7 @@ bool ControllBus::receiveSecondClick(int X, int Y, MouseEvent me)
 		{
 			if(controller->outBuses[it->first].bus==this)
 			{
+				// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
 				it->second->controlledBy=NULL;
 				it=controller->controlledValueGifters.erase(it);
 			}
@@ -404,7 +406,11 @@ void ValueGifter::removeConnections()
 	{
 		for(auto it=controlledBy->controlledValueGifters.begin();it!=controlledBy->controlledValueGifters.end();++it)
 		{
-			if(it->second==this) {controlledBy->controlledValueGifters.erase(it); break;}
+			if(it->second==this) {
+				// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
+				controlledBy->controlledValueGifters.erase(it);
+				break;
+			}
 		}
 	}
 	controlledBy=NULL;

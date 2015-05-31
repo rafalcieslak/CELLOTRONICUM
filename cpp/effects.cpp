@@ -70,12 +70,12 @@ bool checkEffectsList()
 	
 	bool gotAllEffects=true;
 	
-	for(auto it=SCEffectsList.begin();it!=SCEffectsList.end();++it)
+	for(auto &effect : SCEffectsList)
 	{
-		if(!((*it).second)) 
+		if(!(effect.second)) 
 		{
 			gotAllEffects=false;
-			fprintf(stderr, "Effect '%s' not found on server side!!! Program will be closed!\n", (*it).first);
+			fprintf(stderr, "Effect '%s' not found on server side!!! Program will be closed!\n", effect.first);
 		}
 	}
 	
@@ -334,15 +334,15 @@ void Effect::updateTopologicalSequence()
 	
 	effectTree.clear();
 	
-	for(auto it=getConnections()->begin();it!=getConnections()->end();++it)
+	for(const auto &conn : *(getConnections()))
 	{
-		if((*it).first->getType()!=BT_FEEDBACK_OUTBUS && (*it).second->getType()!=BT_FEEDBACK_OUTBUS)
-		effectTree.insert(std::pair<int, int>((*it).first->getEffect()->getId(), (*it).second->getEffect()->getId()));
+		if(conn.first->getType()!=BT_FEEDBACK_OUTBUS && conn.second->getType()!=BT_FEEDBACK_OUTBUS)
+			effectTree.insert(std::pair<int, int>(conn.first->getEffect()->getId(), conn.second->getEffect()->getId()));
 	}
 	
-	for(auto it=effectTree.begin();it!=effectTree.end();++it)
+	for(auto &eff : effectTree)
 	{
-		int id=(*it).second;
+		int id = eff.second;
 		auto itlow=tmp.lower_bound(std::pair<int, int>(id, -1)); 
 		if(itlow==tmp.end() || (*itlow).first!=id)
 		{
@@ -357,9 +357,9 @@ void Effect::updateTopologicalSequence()
 		}
 	}
 	
-	for(auto it=effectTree.begin();it!=effectTree.end();++it)
+	for(auto &eff : effectTree)
 	{
-		int id=(*it).first;
+		int id = eff.first;
 		auto itlow=tmp.lower_bound(std::pair<int, int>(id, -1)); 
 		if(itlow==tmp.end() || (*itlow).first!=id)
 		{
@@ -483,25 +483,25 @@ void Effect::saveToFile(const char* filename)
 		return;
 	}
 	
-	for(auto it=effectInstanceList.begin();it!=effectInstanceList.end();++it)
+	for(auto &eff : effectInstanceList)
 	{
-		Effect* effect=(*it).second;
+		Effect* effect = eff.second;
 		fprintf(file, "effect %s %d \"", effect->getFullName(), effect->getId());
 		effect->saveData(file);
 		fprintf(file, "\"\n");
 	}
 	
-	for(auto it=getControllerInstanceList()->begin();it!=getControllerInstanceList()->end();++it)
+	for(auto &cont : *getControllerInstanceList())
 	{
-		Controller* controller=(*it).second;
+		Controller* controller = cont.second;
 		fprintf(file, "controller %s %d \"", controller->getName(), controller->getId());
 		controller->saveData(file);
 		fprintf(file, "\"\n");
 	}
 	
-	for(auto it=getConnections()->begin();it!=getConnections()->end();++it)
+	for(const auto &conn : *(getConnections()))
 	{
-		fprintf(file, "connection %d %d %d %d\n", (*it).first->getEffect()->getId(), (*it).first->getArg(), (*it).second->getEffect()->getId(), (*it).second->getArg());
+		fprintf(file, "connection %d %d %d %d\n", conn.first->getEffect()->getId(), conn.first->getArg(), conn.second->getEffect()->getId(), conn.second->getArg());
 	}
 	
 	fclose(file);
@@ -598,9 +598,9 @@ void Effect::loadFromFile(const char* filename)
 			
 			Bus* bus1, *bus2;
 			
-			for(auto it=busList.begin();it!=busList.end();++it)
+			for(auto &b : busList)
 			{
-				Bus* bus=(*it).second;
+				Bus* bus = b.second;
 				if(bus->getEffect()==eff1 && bus->getArg()==arg1) bus1=bus;
 				if(bus->getEffect()==eff2 && bus->getArg()==arg2) bus2=bus;
 			}
@@ -623,10 +623,8 @@ void Effect::clearAll()
 		delete ptr;
 	}
 	
-	for(auto it=getControllerInstanceList()->begin();it!=getControllerInstanceList()->end();++it)
-	{
-		delete it->second;
-	}
+	for(auto &cont : *getControllerInstanceList())
+		delete cont.second;
 
 	getConnections()->clear();
 	busList.clear();
@@ -726,11 +724,11 @@ void EffectCreator::back()
 void EffectCreator::init()
 {
 	chosenEffect=new EffectCreatorMenuEntry("", NULL, false);
-	for(auto it=effectsList.begin();it!=effectsList.end();++it)
+	for(auto &eff : effectsList)
 	{
-		const char* name=(*it).name;
-		const char* group=(*it).group;
-		const char* subgroup=(*it).subgroup;
+		const char* name = eff.name;
+		const char* group = eff.group;
+		const char* subgroup = eff.subgroup;
 		
 		
 		if(chosenEffect->submenuEntries->empty() || strcmp(chosenEffect->submenuEntries->back()->name, group)!=0)
@@ -755,9 +753,9 @@ void EffectCreator::init()
 	chosenEffect->submenuEntries->push_back(new EffectCreatorMenuEntry("Controllers", chosenEffect, false));
 	auto mapIt=--chosenEffect->submenuEntries->end();
 	
-	for(auto it=getControllerList()->begin();it!=getControllerList()->end();++it)
+	for(auto &cont : *getControllerList())
 	{
-		const char* name=(*it);
+		const char* name = cont;
 		(*mapIt)->submenuEntries->push_back(new EffectCreatorMenuEntry(name, (*mapIt), true));
 	}
 	
@@ -788,9 +786,9 @@ void EffectCreator::draw(int X, int Y)
 		if(actualEntry==NULL) break;
 	
 		X-=actualEntry->width+menu_period;
-		for(auto it=actualEntry->submenuEntries->begin();it!=actualEntry->submenuEntries->end();++it)
+		for(auto submenuEntry : *(actualEntry->submenuEntries))
 		{
-			SDL_Texture* nameTex=(((*it)==oldEntry)?(*it)->nameTexRed:(*it)->nameTex);
+			SDL_Texture* nameTex=((submenuEntry==oldEntry)? submenuEntry->nameTexRed : submenuEntry->nameTex );
 			int w, h;
 			SDL_QueryTexture(nameTex, NULL, NULL, &w, &h);
 			SDL_Rect nameRect;

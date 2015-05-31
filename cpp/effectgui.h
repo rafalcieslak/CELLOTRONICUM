@@ -314,8 +314,9 @@
 		///deinicializuje GUI (do wrzucenia w destruktor efektu)
 		void quitGUI()
 		{
-			for(unsigned int i=0;i<drawables.size();++i)
-				drawables[i].free();
+			for(auto &drawable : drawables)
+				drawable.free();
+				
 			EffectArgument* args=getArgs();
 			int argsCount=getArgsCount();
 			ArgVis* argvis=getArgumentVisuals();
@@ -347,10 +348,9 @@
 		{
 			pauseButton->move(X-posX, Y-posY);
 			
-			for(unsigned int i=0;i<drawables.size();++i)
-			{
-				drawables[i].drawable->move(X-posX, Y-posY);
-			}
+			for(auto &d : drawables)
+				d.drawable->move(X-posX, Y-posY);
+				
 			posX=X; posY=Y;
 		}
 		
@@ -418,20 +418,17 @@
 				return true;
 			}
 			
-			for(unsigned int i=0;i<drawables.size();++i)
-			{
-				if(drawables[i].drawable->receiveClick(X, Y, me)) return true;
-			}
+			for(auto &d : drawables)
+				if(d.drawable->receiveClick(X, Y, me)) return true;
 			
 			return false;
 		}
 		
 		bool receiveSecondClick(int X, int Y, MouseEvent me)
 		{
-			for(unsigned int i=0;i<drawables.size();++i)
-			{
-				if(drawables[i].drawable->receiveSecondClick(X, Y, me)) return true;
-			}
+			for(auto &d : drawables)
+				if(d.drawable->receiveSecondClick(X, Y, me)) return true;
+				
 			if(me==ME_PRESS)
 			{
 				if(posX<=X && X<=posX+width && posY<=Y && Y<=posY+height)
@@ -472,10 +469,8 @@
 		
 		bool receiveKeyboardEvent(SDL_Scancode scancode)
 		{
-			for(unsigned int i=0;i<drawables.size();++i)
-			{
-				if(drawables[i].drawable->receiveKeyboardEvent(scancode)) return true;
-			}
+			for(auto &d : drawables)
+				if(d.drawable->receiveKeyboardEvent(scancode)) return true;
 			return false;
 		}
 		

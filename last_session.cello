@@ -1,5 +1,0 @@
-effect Output 0 "560 506 "
-effect Sinus 1 "397 506 1 20000.000000 0.000000 20000.000000 2 1.000000 0.000000 1.000000 "
-controller MousePos 0 "350 377 1 1 1 "
-connection 1 0 0 0
-connection 1 0 0 1
