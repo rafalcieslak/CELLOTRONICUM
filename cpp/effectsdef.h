@@ -18,11 +18,11 @@
 		ArgVis argsVis[argsCount];\
 	public:\
 		static constexpr const char* fullName=FULL_NAME;\
-		const char* getFullName() {return fullName;}\
+		const char* getFullName() const {return fullName;}\
 		static constexpr const char* name=SC_NAME;\
-		const char* getName() {return name;}\
+		const char* getName() const {return name;}\
 		EffectArgument* getArgs() {return args;}\
-		const int getArgsCount() {return argsCount;}\
+		int getArgsCount() const {return argsCount;}\
 		ArgVis* getArgumentVisuals() {return argsVis;}
 	
 	
@@ -995,11 +995,11 @@
 			
 		public:
 			static constexpr const char* fullName="Playbuf";
-			const char* getFullName() {return fullName;}
+			const char* getFullName() const {return fullName;}
 			static constexpr const char* name="eff_playbuf";
-			const char* getName() {return name;}
+			const char* getName() const {return name;}
 			EffectArgument* getArgs() {return args;}
-			const int getArgsCount() {return argsCount;}
+			int getArgsCount() const {return argsCount;}
 			ArgVis* getArgumentVisuals() {return argsVis;}
 			int_pair* getVisualPositions() {return visualPositions;}
 			
@@ -1093,11 +1093,11 @@
 			
 		public:
 			static constexpr const char* fullName="Recordbuf";
-			const char* getFullName() {return fullName;}
+			const char* getFullName() const {return fullName;}
 			static constexpr const char* name="eff_recordbuf";
-			const char* getName() {return name;}
+			const char* getName() const {return name;}
 			EffectArgument* getArgs() {return args;}
-			const int getArgsCount() {return argsCount;}
+			int getArgsCount() const {return argsCount;}
 			ArgVis* getArgumentVisuals() {return argsVis;}
 			int_pair* getVisualPositions() {return visualPositions;}
 			

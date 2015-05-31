@@ -24,6 +24,8 @@ void registerController(const char* name)
 
 int Controller::lastId=0;
 
+bool Controller::valueIsReady(int){ return true; }
+
 void Controller::saveData(FILE* file) 
 {
 	fprintf(file, "%d %d ", posX, posY);

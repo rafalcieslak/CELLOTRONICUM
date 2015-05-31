@@ -59,11 +59,11 @@
 		//zwraca wysokość okna
 		virtual int getHeight() = 0;
 		//odbiera pierwszy klawisz myszy
-		virtual bool receiveClick(int X, int Y, MouseEvent me) = 0;
+		virtual bool receiveClick(int X, int Y, MouseEvent me);
 		//odbiera drugi klawisz myszy
-		virtual bool receiveSecondClick(int X, int Y, MouseEvent me) {return false;}
+		virtual bool receiveSecondClick(int X, int Y, MouseEvent me);
 		//odbiera trzeci klawisz myszy
-		virtual bool receiveKeyboardEvent(SDL_Scancode scancode) {return false;}
+		virtual bool receiveKeyboardEvent(SDL_Scancode scancode);
 		virtual ~Drawable() {}
 	};
 
@@ -92,9 +92,8 @@
 		int getWidth() {return 0;}
 		int getHeight() {return 0;}
 		
-		bool receiveClick(int X, int Y, MouseEvent me) {return false;}
-		
 		Point(int X, int Y): posX(X), posY(Y) {}
+		virtual ~Point() {}
 	};
 
 	///Obiekt rysowalny: przycisk - pauzuje efekt/kontroler, klasa bazowa dla SwitchButton

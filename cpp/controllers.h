@@ -88,7 +88,7 @@ class Controller{
 	///zwraca wartość busa o zadanym id (do implementacji przez kontroler)
 	virtual float getValue(int id) = 0;
 	///zwraca czy bus jest gotowy do zwrócenia wartości (do implementacji przez kontroler - domyślnie jest zawsze dostępny)
-	virtual bool valueIsReady(int id) {return true;}
+	virtual bool valueIsReady(int id);
 	///zwraca nazwę kontrolera (do implementacji przez kontroler)
 	virtual const char* getName() = 0;
 	///zwraca ilość busów (do implementacji przez kontroler)

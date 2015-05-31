@@ -105,9 +105,9 @@
 			void moveToHead();
 			
 			///Metoda zapisująca swoje dane do strumienia pliku (do implementacji przez konkretne efekty, lub gotowej implementacji z EfektGUI, wykorzystywane przy zapisie do pliku)
-			virtual void saveData(FILE* file) {}
+			virtual void saveData(FILE* file) = 0;
 			///Metoda czytająca swoje dane z cstringa (są to dane zapisane wcześniej przez saveData, wykorzystywane przy wczytywaniu z pliku)
-			virtual void loadData(char* data) {}
+			virtual void loadData(char* data) = 0;
 		
 			Effect();
 			
@@ -117,24 +117,24 @@
 			int getId() {return id;}
 			
 			///zwraca nazwe taką samą jak nazwa efektu w SC (do implementacji przez konkretne efekty)
-			virtual const char* getName() = 0;
+			virtual const char* getName() const = 0;
 			///zwraca nazwę do wyświetlenia w GUI - używana jest także do identyfikacji więc nie można powtarzać tych samych nazw! (do implementacji przez konkretne efekty)
-			virtual const char* getFullName() = 0;
+			virtual const char* getFullName() const = 0;
 			///Zwraca tablice z argumentami efektu (do implementacji przez konkretne efekty)
 			virtual EffectArgument* getArgs() = 0;
 			///Zwraca ilość argumentów (do implementacji przez konkretne efekty)
-			virtual const int getArgsCount() = 0;
+			virtual int getArgsCount() const = 0;
 			
 			///metoda rysująca efekt (do implementacji przez konkretne efekty, lub gotowa implementacja w EfektGUI)
 			virtual void draw(){}
 			///odbieranie pirwszego przycisku myszy paramety do współżędna kliknięcia oraz typ (do implementacji przez konkretne efekty, lub gotowa implementacja w EfektGUI)
-			virtual bool receiveClick(int X, int Y, MouseEvent me){return false;}
+			virtual bool receiveClick(int X, int Y, MouseEvent me);
 			///odbieranie drugiego przycisku myszy paramety do współżędna kliknięcia oraz typ (do implementacji przez konkretne efekty, lub gotowa implementacja w EfektGUI)
-			virtual bool receiveSecondClick(int X, int Y, MouseEvent me){return false;}
+			virtual bool receiveSecondClick(int X, int Y, MouseEvent me);
 			///odbieranie trzeciego przycisku myszy paramety do współżędna kliknięcia oraz typ (do implementacji przez konkretne efekty, lub gotowa implementacja w EfektGUI)
-			virtual bool receiveThridClick(int X, int Y, MouseEvent me){return false;}
+			virtual bool receiveThridClick(int X, int Y, MouseEvent me);
 			///odbieranie naciśnięć klawiszy (do implementacji przez konkretne efekty, lub gotowa implementacja w EfektGUI)
-			virtual bool receiveKeyboardEvent(SDL_Scancode scancode){return false;}
+			virtual bool receiveKeyboardEvent(SDL_Scancode scancode);
 			
 			///metoda która może być wykonywania przez konkretne efekty co każdą klatkę programu (np. żeby pilnować odpowiednich wartości argumentów efektów) - nie musi być implementowana 
 			virtual void doSomething() {}

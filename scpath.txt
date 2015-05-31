@@ -1,0 +1,1 @@
+C:\Program Files (x86)\SuperCollider-3.6.6\sclang.exe

@@ -190,6 +190,12 @@ Effect::~Effect()
 	effectInstanceList.erase(id);
 }
 
+// By default, events are left unprocessed
+bool Effect::receiveClick(int, int, MouseEvent){ return false; }
+bool Effect::receiveSecondClick(int, int, MouseEvent){ return false; }
+bool Effect::receiveThridClick(int, int, MouseEvent){ return false; }
+bool Effect::receiveKeyboardEvent(SDL_Scancode ){ return false; }
+
 void Effect::setArgument(int argId, int value)
 {
 	EffectArgument* args=getArgs();

@@ -82,6 +82,11 @@ void setOptimalPrecision(float value, std::stringstream& ss)
 	ss.precision(2);
 }
 
+// By default, events are left unprocessed
+bool Drawable::receiveClick(int, int, MouseEvent){ return false; }
+bool Drawable::receiveSecondClick(int, int, MouseEvent){ return false; }
+bool Drawable::receiveKeyboardEvent(SDL_Scancode){ return false; }
+
 void SwitchButton::setStatus(bool s) 
 {
 	status=s;

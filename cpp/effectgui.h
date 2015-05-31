@@ -104,7 +104,7 @@
         void* data=NULL; ///dodatkowo zhardkodowane dane
         
 		///Konstruktor dla visType=VT_SLIDER parametry to początek i koniec przedziału, oraz wysokość i szerokość suwaka
-        ArgVis(VisulalisationType type, float min, float max, int width=0, int height=0)
+        ArgVis(VisulalisationType, float min, float max, int width=0, int height=0)
         {
 				visType=VT_SLIDER;
 				data=malloc(sizeof(float)*2 + sizeof(int)*2);
@@ -115,7 +115,7 @@
         }
 		
 		///Konstruktor dla visType=VT_SWITCHBUTTON parametry to 2 wartości przełącznika, wymbole odpowiadające wartością oraz czy przełącznik ma być trigerem
-		ArgVis(VisulalisationType type, float value1, float value2, int symbol1, int symbol2, bool triger)
+		ArgVis(VisulalisationType, float value1, float value2, int symbol1, int symbol2, bool triger)
         {
 				visType=VT_SWITCHBUTTON;
 				data=malloc(sizeof(float)*2 + sizeof(int)*2 + sizeof(bool));
@@ -127,7 +127,7 @@
         }
 		
 		///Konstruktor dla visType=VT_GRADUALSLIDER generuje tablicę z liczb całkowitych o podanym przedziale
-		ArgVis(VisulalisationType type, int min, int max)
+		ArgVis(VisulalisationType, int min, int max)
         {
 			int count=max-min+1;
 			
@@ -147,7 +147,7 @@
 		}
 		
 		///Konstruktor dla visType=VT_GRADUALSLIDER, tablica podawana jest w parametrze
-		ArgVis(VisulalisationType type, FloatArray floatArray)
+		ArgVis(VisulalisationType, FloatArray floatArray)
         {
             visType=VT_GRADUALSLIDER;
             data=malloc(sizeof(int)+floatArray.count*sizeof(float));
@@ -163,7 +163,7 @@
         }
 		
 		///Konstruktor dla visType=VT_TEXT, jedynym parametrem jest tekst do wyświetlenia
-		ArgVis(VisulalisationType type, std::string str)
+		ArgVis(VisulalisationType, std::string str)
         {
             visType=VT_TEXT;
             data=new std::string(str);
