@@ -114,6 +114,8 @@ void EffectArgument::addArgumentToMessage(Message* msg)
 		case TYPE_STRING:
 			msg->pushStr(*(std::string*)value);
 		break;
+		default:
+		break;
 	}
 }
 
@@ -132,6 +134,8 @@ void EffectArgument::sendArgument(int id)
 		break;
 		case TYPE_STRING:
 			msg.pushStr(*(std::string*)value);
+		break;
+		default:
 		break;
 	}
 	
@@ -160,6 +164,8 @@ EffectArgument::~EffectArgument()
 		break;
 		case TYPE_STRING:
 			delete (std::string*)value;
+		break;
+		default:
 		break;
 	}
 }
@@ -387,7 +393,7 @@ void Effect::updateTopologicalSequence()
 	}
 	
 	//effectInstanceList[sequence[0]]->moveToHead();
-	for(int i=1;i<sequence.size();++i)
+	for(unsigned int i=1;i<sequence.size();++i)
 	{
 		effectInstanceList[sequence[i]]->moveAfter(effectInstanceList[sequence[i-1]]);
 	}
@@ -811,6 +817,8 @@ void EffectCreator::receiveKeyboardEvent(SDL_Scancode scancode)
 		case SDL_SCANCODE_BACKSPACE:
 		case SDL_SCANCODE_LEFT:
 			back();
+		break;
+		default:
 		break;
 	}
 }

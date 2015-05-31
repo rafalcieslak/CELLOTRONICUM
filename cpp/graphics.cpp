@@ -181,7 +181,7 @@ SDL_Texture* generateVerticalText(const char* text, SDL_Color color)
 	SDL_RenderClear(render);
 	
 	int p=0;
-	for(int i=0;i<glyphs.size();++i)
+	for(unsigned int i=0;i<glyphs.size();++i)
 	{
 		int texW, texH;
 		SDL_QueryTexture(glyphs[i], NULL, NULL, &texW, &texH);
@@ -271,4 +271,3 @@ SDL_Color getDarkerColor(SDL_Color color)
 	color.b=(color.b+127)/2;
 	return color;
 }
-

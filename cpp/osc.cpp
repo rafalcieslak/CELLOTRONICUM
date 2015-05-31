@@ -177,6 +177,8 @@ int OSCConn::getFreeBus()
 		}
 		
 	}
+	printf("Fail to get free bus (Socket not OK)\n");
+	return 0;
 }
 
 void OSCConn::deleteBus(int bus)
@@ -282,6 +284,8 @@ int OSCConn::loadBuffer(const char* filename)
 			return -1;
 		}
 	}
+	printf("Fail to load buffer (Socket not OK)\n");
+	return -1;
 }
 
 int OSCConn::allocBuffer(float seconds)
@@ -327,6 +331,8 @@ int OSCConn::allocBuffer(float seconds)
 			return -1;
 		}
 	}
+	printf("Fail to allocate buffer (Socket not OK)\n");
+	return -1;
 }
 
 std::string OSCConn::getBufferFileById(int id)

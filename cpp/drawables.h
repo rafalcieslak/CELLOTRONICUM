@@ -475,7 +475,7 @@
 		public:
 		
 		EntryBox(int pX, int pY, int w, float v, Effect* e, int a):
-		width(w), posX(pX), posY(pY), height(getFontHeight())
+		width(w), height(getFontHeight()), posX(pX), posY(pY)
 		{
 			effect=e;
 			argument=a;
@@ -687,16 +687,20 @@
 			
 			if(periodCount>=2)
 			{
+				// Restore previous value text
 				std::stringstream ss;
 				ss.setf(std::ios::fixed);
 				ss.precision(2);
 				ss<<value;
 				data=ss.str();
 				updateValue();
+				return false;
 			}
 			else
 			{
+				// Set new value from text
 				value=atof(data.c_str());
+				return true;
 			}
 		}
 		
@@ -801,8 +805,9 @@
 		static const int entry_box_width=30; ///minimalna szerokość pola do wpisywania
 		
 		Slider(int pX, int pY, int w, int h, float rB, float rE, float l, Effect* e, int a):
-		rangeBegin(rB), rangeEnd(rE), width(w), height(h), posX(pX), posY(pY), level(int((1.0f-(l-rB)/(rE-rB)) * float(height))), value(l), lastValue(l),
-		entryBox(0, 0, entry_box_width, l, e, a), rangeBeginBox(0, 0, entry_box_width, rB, NULL, 0), rangeEndBox(0, 0, entry_box_width, rE, NULL, 0)
+		rangeBegin(rB), rangeEnd(rE), width(w), height(h), posX(pX), posY(pY), level(int((1.0f-(l-rB)/(rE-rB)) * float(height))), 
+		entryBox(0, 0, entry_box_width, l, e, a), rangeBeginBox(0, 0, entry_box_width, rB, NULL, 0), rangeEndBox(0, 0, entry_box_width, rE, NULL, 0),
+		lastValue(l), value(l)
 		{
 			effect=e; 
 			argument=a;
@@ -1048,7 +1053,7 @@
 		static const int slider_bus_height=8; ///wysokość busa do podpięcia kontrolera (szerokość jest taka sama jak szerokość całego suwaka)
 		
 		GradualSlider(int pX, int pY, int w, int h, int gC, float* g, float l, Effect* e, int a):
-		width(w), height(h), posX(pX), posY(pY), gradualCount(gC), graduals(g)
+		gradualCount(gC), graduals(g), width(w), height(h), posX(pX), posY(pY)
 		{
 			effect=e; 
 			argument=a;

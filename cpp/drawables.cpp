@@ -201,7 +201,7 @@ bool Bus::setClicked()
 		return true;
 	}
 	else
-	lastClicked=id;
+		lastClicked=id;
 	
 	return false;
 }
@@ -297,13 +297,8 @@ bool ControllBus::connectControllBusWithValueGifter()
 		Controller* controller=controllBus->controller;
 		
 		if(valueGifter->controlledBy!=NULL)
-		{
-			bool fromThisController=false;
-			
-			int busCount=controller->getBusCount();
-			
-			int whichBus=0;
-			for(;whichBus<controller->outBuses.size();++whichBus)
+		{	
+			for(unsigned int whichBus=0;whichBus<controller->outBuses.size();++whichBus)
 			{
 				if(controller->outBuses[whichBus].bus==controllBus) break;
 			}
@@ -350,7 +345,11 @@ bool ControllBus::connectControllBusWithValueGifter()
 
 bool ControllBus::setClicked()
 {
-	if(clicked==true && lastClicked==id) {clicked=false; lastClicked=-1;}
+	if(clicked==true && lastClicked==id) {
+		clicked=false;
+		lastClicked=-1;
+		return false;
+	}
 	else
 	{
 		clicked=true;
@@ -396,7 +395,6 @@ void ValueGifter::setClicked()
 
 void ValueGifter::removeConnections()
 {
-	ValueGifter* dis=valueGifterList[id];
 	if(controlledBy!=NULL)
 	{
 		for(auto it=controlledBy->controlledValueGifters.begin();it!=controlledBy->controlledValueGifters.end();++it)

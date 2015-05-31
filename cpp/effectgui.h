@@ -8,7 +8,11 @@
 		Drawable* drawable; ///obiekt rysowalny
 		SDL_Texture* nameTex=NULL; ///tekstura z nazwą
 		bool vertical; ///czy tekst ma być pionowy
-		ParamDrawable(Drawable* d, const char* text, bool v=false): vertical(v), drawable(d) {if(vertical) nameTex=generateVerticalText(text); else nameTex=generateText(text);}
+		ParamDrawable(Drawable* d, const char* text, bool v=false): drawable(d), vertical(v)
+		{
+			if(vertical) nameTex=generateVerticalText(text);
+			else nameTex=generateText(text);
+		}
 		
 		///rysuje obiekt rysowalny (tylko)
 		void draw() 
@@ -299,6 +303,8 @@
 					case VT_TEXT:
 						drawables.push_back(ParamDrawable(new Point(posX+argpos[i].first, posY+argpos[i].second), ((std::string*)argvis[i].data)->c_str()));
 					break;
+					default:
+					break;
 				}
 			}
 			
@@ -308,8 +314,8 @@
 		///deinicializuje GUI (do wrzucenia w destruktor efektu)
 		void quitGUI()
 		{
-			for(int i=0;i<drawables.size();++i)
-			drawables[i].free();
+			for(unsigned int i=0;i<drawables.size();++i)
+				drawables[i].free();
 			EffectArgument* args=getArgs();
 			int argsCount=getArgsCount();
 			ArgVis* argvis=getArgumentVisuals();
@@ -324,9 +330,8 @@
 		}
 		
 		///aktualizuje pozycje obiektów rysowalnych z tablicy zwracanej przez getVisualPositions()
-		int updateDrawablePositions()
+		void updateDrawablePositions()
 		{
-			EffectArgument* args=getArgs();
 			int argsCount=getArgsCount();
 			
 			std::pair<int, int>* argpos=getVisualPositions();
@@ -342,7 +347,7 @@
 		{
 			pauseButton->move(X-posX, Y-posY);
 			
-			for(int i=0;i<drawables.size();++i)
+			for(unsigned int i=0;i<drawables.size();++i)
 			{
 				drawables[i].drawable->move(X-posX, Y-posY);
 			}
@@ -368,8 +373,6 @@
 			pauseButton->setSymbol(int(isPaused()));
 			pauseButton->draw();
 			
-			ArgVis* argvis=getArgumentVisuals();
-			
 			for(int i=drawables.size()-1;i>=0;--i)
 			{
 				drawables[i].drawText();
@@ -391,8 +394,6 @@
 				else
 					unpauseInstance();
 			}
-			
-			ArgVis* argumentVisuals=getArgumentVisuals();
 			
 			if(me==ME_PRESS)
 			{
@@ -417,7 +418,7 @@
 				return true;
 			}
 			
-			for(int i=0;i<drawables.size();++i)
+			for(unsigned int i=0;i<drawables.size();++i)
 			{
 				if(drawables[i].drawable->receiveClick(X, Y, me)) return true;
 			}
@@ -427,7 +428,7 @@
 		
 		bool receiveSecondClick(int X, int Y, MouseEvent me)
 		{
-			for(int i=0;i<drawables.size();++i)
+			for(unsigned int i=0;i<drawables.size();++i)
 			{
 				if(drawables[i].drawable->receiveSecondClick(X, Y, me)) return true;
 			}
@@ -471,7 +472,7 @@
 		
 		bool receiveKeyboardEvent(SDL_Scancode scancode)
 		{
-			for(int i=0;i<drawables.size();++i)
+			for(unsigned int i=0;i<drawables.size();++i)
 			{
 				if(drawables[i].drawable->receiveKeyboardEvent(scancode)) return true;
 			}
@@ -500,14 +501,12 @@
 		///zapisuje wszystkie wartości argumentów i ich przedziały ze strumienia
 		virtual void loadData(char* str) 
 		{
-			int argsCount=getArgsCount();
 			EffectArgument* args=getArgs();
-			ArgVis* argumentVisuals=getArgumentVisuals();
 			
 			std::stringstream ss;
 			ss<<str;
 			
-			int ptr=0, X, Y;
+			int X, Y;
 			
 			ss>>X>>Y;
 			
@@ -565,7 +564,6 @@
 			posX=X;
 			posY=Y;
 			
-			EffectArgument* args=getArgs();
 			int argsCount=getArgsCount();
 			
 			visualPositions= new std::pair<int, int>[argsCount];
@@ -616,6 +614,8 @@
 						x+=width+slider_period;
 						extra_period=right_padding-slider_period;
 					}
+					break;
+					default:
 					break;
 				}
 			}

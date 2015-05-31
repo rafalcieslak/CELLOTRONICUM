@@ -145,7 +145,7 @@ class Controller{
 	
 	virtual ~Controller()
 	{
-		for(int i=0;i<outBuses.size();++i)
+		for(unsigned int i=0;i<outBuses.size();++i)
 		{
 			controllerByBus.erase(outBuses[i].bus);
 		}
@@ -165,7 +165,7 @@ class Controller{
 	///ustawia pozycję okna (lewy górny róg)
 	void setPos(int X, int Y)
 	{
-		for(int i=0;i<outBuses.size();++i)
+		for(unsigned int i=0;i<outBuses.size();++i)
 		{
 			outBuses[i].bus->move(X-posX, Y-posY);
 		}
@@ -205,7 +205,7 @@ class Controller{
 			return true;
 		}
 		
-		for(int i=0;i<outBuses.size();++i)
+		for(unsigned int i=0;i<outBuses.size();++i)
 		{
 			if(outBuses[i].bus->receiveClick(X, Y, me)) return true;
 		}
@@ -215,7 +215,7 @@ class Controller{
 	
 	bool receiveSecondClick(int X, int Y, MouseEvent me)
 	{
-		for(int i=0;i<outBuses.size();++i)
+		for(unsigned int i=0;i<outBuses.size();++i)
 		{
 			if(outBuses[i].bus->receiveSecondClick(X, Y, me)) return true;
 		}
@@ -249,7 +249,7 @@ class Controller{
 	{
 		if(posX<=X && X<=posX+width && posY<=Y && Y<=posY+height && me==ME_PRESS)
 		{
-			for(int i=0;i<outBuses.size();++i)
+			for(unsigned int i=0;i<outBuses.size();++i)
 			{
 				outBuses[i].free();
 			}
@@ -284,7 +284,7 @@ class Controller{
 		pauseButton->setSymbol(int(isPaused()));
 		pauseButton->draw();
 		
-		for(int i=0;i<outBuses.size();++i)
+		for(unsigned int i=0;i<outBuses.size();++i)
 		{
 			outBuses[i].draw();
 		}
