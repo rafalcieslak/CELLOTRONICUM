@@ -55,8 +55,8 @@ std::pair<
      reverse_range(OriginalRangeType&& range)
 {
     return std::make_pair(
-			std::make_reverse_iterator(begin(range)), // C++14
-			std::make_reverse_iterator( end(range) )
+			std::make_reverse_iterator( end (range)), // C++14
+			std::make_reverse_iterator(begin(range) )
 		);
 }
 
@@ -168,22 +168,22 @@ bool checkInputs()
 					if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && !(state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT]) && !(state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL]))
 					{
 						for(auto &eff : reverse_range(*effectInstanceList))
-							if(it->second->receiveClick(x, y, ME_REPEAT))
+							if(eff.second->receiveClick(x, y, ME_REPEAT))
 								break;
 							
 						for(auto &cont : reverse_range(*controllerInstanceList))
-							if(it->second->receiveClick(x, y, ME_REPEAT))
+							if(cont.second->receiveClick(x, y, ME_REPEAT))
 								break;
 					}
 					else
 					if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT) || (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) && (state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT])))
 					{
 						for(auto &eff : reverse_range(*effectInstanceList))
-							if(it->second->receiveSecondClick(x, y, ME_REPEAT))
+							if(eff.second->receiveSecondClick(x, y, ME_REPEAT))
 								break;
 							
 						for(auto &cont : reverse_range(*controllerInstanceList))
-							if(it->second->receiveSecondClick(x, y, ME_REPEAT))
+							if(cont.second->receiveSecondClick(x, y, ME_REPEAT))
 								break;
 					}
 					else

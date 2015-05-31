@@ -145,7 +145,7 @@ class Controller{
 	
 	virtual ~Controller()
 	{
-		for(auto outbus : outBuses)
+		for(auto &outbus : outBuses)
 			controllerByBus.erase(outbus.bus);
       
 		for(auto &p : controlledValueGifters)

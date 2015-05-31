@@ -312,7 +312,6 @@ bool ControllBus::connectControllBusWithValueGifter()
 			{
 				if(it->second==valueGifter)
 				{
-					// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
 					controller->controlledValueGifters.erase(it);
 					valueGifter->controlledBy=NULL;
 					break;
@@ -376,7 +375,6 @@ bool ControllBus::receiveSecondClick(int X, int Y, MouseEvent me)
 		{
 			if(controller->outBuses[it->first].bus==this)
 			{
-				// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
 				it->second->controlledBy=NULL;
 				it=controller->controlledValueGifters.erase(it);
 			}
@@ -407,7 +405,6 @@ void ValueGifter::removeConnections()
 		for(auto it=controlledBy->controlledValueGifters.begin();it!=controlledBy->controlledValueGifters.end();++it)
 		{
 			if(it->second==this) {
-				// FIXME: Erasing elements from range used for iteration? That's just asking for super-weird bugs.
 				controlledBy->controlledValueGifters.erase(it);
 				break;
 			}
