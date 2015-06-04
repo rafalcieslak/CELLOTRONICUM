@@ -1,1 +1,1 @@
-g++ main.cpp effects.cpp effectsdef.cpp osc.cpp graphics.cpp controllers.cpp controllersdef.cpp drawables.cpp effectgui.cpp -DMAX_PATH=260 -o main  -lSDL2 -lSDL2_ttf -g  -std=c++14 -Wall -Wextra
+g++ cpp/main.cpp cpp/effects.cpp cpp/effectsdef.cpp cpp/osc.cpp cpp/graphics.cpp cpp/controllers.cpp cpp/controllersdef.cpp cpp/drawables.cpp cpp/effectgui.cpp -DMAX_PATH=260 -o main  -lSDL2 -lSDL2_ttf -g  -std=c++14 -Wall -Wextra
