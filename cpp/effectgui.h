@@ -1,6 +1,7 @@
 #ifndef EFFECTGUI_H
 #define EFFECTGUI_H
 #include "drawables.h"
+#include "effects.h"
 
 	///Struktura zawierająca obiekt rysowalny obsługujący paramert (suwak, suwak stopniowy lub bus) i teksturę z nazwą parametru
 	struct ParamDrawable
@@ -186,7 +187,7 @@
 			delete (std::string*)data;
 			
         }
-        
+
     };
 	
 	typedef std::pair<int, int> int_pair;
@@ -218,9 +219,9 @@
 		
 		static const int entrybox_width=35; ///domyślna szerokość pola do wpisywania
 		
-		virtual int_pair* getVisualPositions()=0; ///pozycje obiektów rysowalnych (do implementacji przez konkretne efekty lub AutoEfectGUI)
+		virtual std::vector<int_pair>& getVisualPositions()=0; ///pozycje obiektów rysowalnych (do implementacji przez konkretne efekty lub AutoEfectGUI)
 		
-		virtual ArgVis* getArgumentVisuals()=0; ///opisy wizualizacji argumentów (do implementacji przez konkretne efekty)
+		virtual std::vector<ArgVis>& getArgumentVisuals()=0; ///opisy wizualizacji argumentów (do implementacji przez konkretne efekty)
 		
 		///inicializuje GUI (do wrzucenia w konstruktor efektu)
 		void initGUI(int X, int Y, int W=0, int H=0)
@@ -233,12 +234,12 @@
 			
 			pauseButton=new Button(X+2, Y+2, 0);
 			
-			EffectArgument* args=getArgs();
+			std::vector<EffectArgument>& args=getArgs();
 			int argsCount=getArgsCount();
 			
-			ArgVis* argvis=getArgumentVisuals();
+			std::vector<ArgVis>& argvis=getArgumentVisuals();
 			
-			std::pair<int, int>* argpos=getVisualPositions();
+			std::vector<int_pair>& argpos=getVisualPositions();
 			
 			for(int i=0;i<argsCount;++i)
 			{
@@ -317,9 +318,9 @@
 			for(auto &drawable : drawables)
 				drawable.free();
 				
-			EffectArgument* args=getArgs();
+			std::vector<EffectArgument>& args=getArgs();
 			int argsCount=getArgsCount();
-			ArgVis* argvis=getArgumentVisuals();
+			std::vector<ArgVis>& argvis=getArgumentVisuals();
 		
 			for(int i=0;i<argsCount;++i)
 			{
@@ -335,7 +336,7 @@
 		{
 			int argsCount=getArgsCount();
 			
-			std::pair<int, int>* argpos=getVisualPositions();
+			std::vector<int_pair>& argpos=getVisualPositions();
 			
 			for(int i=0;i<argsCount;++i)
 			{
@@ -478,8 +479,8 @@
 		virtual void saveData(FILE* file) 
 		{
 			int argsCount=getArgsCount();
-			EffectArgument* args=getArgs();
-			ArgVis* argumentVisuals=getArgumentVisuals();
+			std::vector<EffectArgument>& args=getArgs();
+			std::vector<ArgVis>& argumentVisuals=getArgumentVisuals();
 			
 			fprintf(file, "%d %d ", posX, posY);
 			
@@ -496,7 +497,7 @@
 		///zapisuje wszystkie wartości argumentów i ich przedziały ze strumienia
 		virtual void loadData(char* str) 
 		{
-			EffectArgument* args=getArgs();
+			std::vector<EffectArgument>& args=getArgs();
 			
 			std::stringstream ss;
 			ss<<str;
@@ -533,25 +534,26 @@
     ///Klasa która w przeciwieństwie do EfectGUI nie wymaga implementacji getVisualPositions() - sama ustawia obiekty rysowalne
 	class EffectAutoGUI : public EffectGUI
 	{
-		std::pair<int, int>* visualPositions=NULL; ///współżedne obiektów rysowalnych
+		std::vector<int_pair> visualPositions; ///współżedne obiektów rysowalnych
 		
 		public:
 		
-		static const int slider_period=15; ///odległości pomiędzy suwakami
-		static const int top_padding=35; ///górny margines
-		static const int bottom_padding=25; ///dolny margines
-		static const int left_padding=20; ///lewy margines i odległość od busów wejściowych
-		static const int right_padding=15; ///prawy margines i odległość od busów wyjściowych
-		static const int bus_period=35; ///odległość pionowa między busami
+		// These constants' values are defined in effectgui.cpp
+		static const int slider_period; ///odległości pomiędzy suwakami
+		static const int top_padding; ///górny margines
+		static const int bottom_padding; ///dolny margines
+		static const int left_padding; ///lewy margines i odległość od busów wejściowych
+		static const int right_padding; ///prawy margines i odległość od busów wyjściowych
+		static const int bus_period; ///odległość pionowa między busami
 		
 		///Zwraca pozycje obiektów rysowalnych
-		std::pair<int, int>* getVisualPositions()
+		std::vector<int_pair>& getVisualPositions()
 		{
 			return visualPositions;
 		}
 		
 		///inicializacja GUI
-		void initGUI(int X, int Y, int left_padding=left_padding, int right_padding=right_padding)
+		void initGUI(int X, int Y, int custom_left_padding=left_padding, int custom_right_padding=right_padding)
 		{
 			
 			int width=0, height=0;
@@ -561,17 +563,17 @@
 			
 			int argsCount=getArgsCount();
 			
-			visualPositions= new std::pair<int, int>[argsCount];
+			visualPositions.resize(argsCount);
 			
-			int x=width=left_padding+Bus::size+left_padding;
+			int x=width=custom_left_padding+Bus::size+custom_right_padding;
 			
-			ArgVis* argvis=getArgumentVisuals();
+			std::vector<ArgVis>& argvis=getArgumentVisuals();
 			
 			int bus_y=top_padding;
 			int slider_y=0;
 			int bus_y2=top_padding;
 			
-			int extra_period=right_padding;
+			int extra_period=custom_right_padding;
 			
 			for(int i=0;i<argsCount;++i)
 			{
@@ -581,7 +583,7 @@
 					case VT_FREQ_INBUS:
 					case VT_AMP_INBUS:
 					case VT_FEEDBACK_OUTBUS:
-						visualPositions[i]=int_pair(0+left_padding, bus_y);
+						visualPositions[i]=int_pair(0+custom_left_padding, bus_y);
 						bus_y+=bus_period;
 					break;
 					case VT_OUTBUS:
@@ -607,7 +609,7 @@
 						slider_y=std::max(slider_y, height);
 						visualPositions[i]=int_pair(x, 0+top_padding);
 						x+=width+slider_period;
-						extra_period=right_padding-slider_period;
+						extra_period=custom_right_padding-slider_period;
 					}
 					break;
 					default:
@@ -629,7 +631,7 @@
 				}
 			}
 			
-			width+=Bus::size+right_padding;
+			width+=Bus::size+custom_right_padding;
 			
 			
 			EffectGUI::initGUI(X, Y, width, height);
@@ -637,7 +639,6 @@
 		
 		virtual ~EffectAutoGUI()
 		{
-			delete [] visualPositions;
 		}
 		
 	};

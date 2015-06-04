@@ -27,6 +27,10 @@ char fileStr[MAX_PATH];
 // GCC 4.9 is missing some C++14 features, this is a simple fake implementation
 // of make_reverse_iterator. This can be removed in the future, when all then-
 // -current versions of GCC will have this issue solved.
+// Note: Sadly, it is not possible to clearly determine whether the compiler used
+// IS gcc, because all other compilers tend to define __gnuc__ and similar
+// as well to denote compatibility.
+#ifndef __clang__
 #if __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 		namespace std{
 			template <typename I>
@@ -35,6 +39,7 @@ char fileStr[MAX_PATH];
 			    return std::reverse_iterator<I> { i };
 			}
 		}
+#endif
 #endif
 
 // Iterator access templates for ranges

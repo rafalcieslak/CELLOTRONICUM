@@ -14,7 +14,7 @@
 	///Komparator porównujący 2 cstringi
 	struct cmpCStr
 	{
-	   bool operator()(char const *a, char const *b)
+	   bool operator()(char const *a, char const *b) const
 	   {
 		  return std::strcmp(a, b) < 0;
 	   }
@@ -121,7 +121,7 @@
 			///zwraca nazwę do wyświetlenia w GUI - używana jest także do identyfikacji więc nie można powtarzać tych samych nazw! (do implementacji przez konkretne efekty)
 			virtual const char* getFullName() const = 0;
 			///Zwraca tablice z argumentami efektu (do implementacji przez konkretne efekty)
-			virtual EffectArgument* getArgs() = 0;
+			virtual std::vector<EffectArgument>& getArgs() = 0;
 			///Zwraca ilość argumentów (do implementacji przez konkretne efekty)
 			virtual int getArgsCount() const = 0;
 			

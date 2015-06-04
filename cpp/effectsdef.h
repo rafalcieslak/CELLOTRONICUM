@@ -14,16 +14,16 @@
 #define EFFECT_BODY(ARGS_COUNT, FULL_NAME, SC_NAME) \
 	private:\
 		static const int argsCount=ARGS_COUNT;\
-		EffectArgument args[argsCount];\
-		ArgVis argsVis[argsCount];\
+		std::vector<EffectArgument> args;\
+		std::vector<ArgVis> argsVis;\
 	public:\
 		static constexpr const char* fullName=FULL_NAME;\
 		const char* getFullName() const {return fullName;}\
 		static constexpr const char* name=SC_NAME;\
 		const char* getName() const {return name;}\
-		EffectArgument* getArgs() {return args;}\
+		std::vector<EffectArgument>& getArgs() {return args;}\
 		int getArgsCount() const {return argsCount;}\
-		ArgVis* getArgumentVisuals() {return argsVis;}
+		std::vector<ArgVis>& getArgumentVisuals() {return argsVis;}
 	
 	
 	
@@ -920,10 +920,10 @@
 			int bufnum=-1;
 			static const int argsCount=4;
 			
-			EffectArgument args[argsCount];
-			ArgVis argsVis[argsCount];
+			std::vector<EffectArgument> args;
+			std::vector<ArgVis> argsVis;
 			
-			int_pair visualPositions[argsCount];
+			std::vector<int_pair> visualPositions;
 			
 			char playbufFileName[MAX_PATH];
 			
@@ -998,10 +998,10 @@
 			const char* getFullName() const {return fullName;}
 			static constexpr const char* name="eff_playbuf";
 			const char* getName() const {return name;}
-			EffectArgument* getArgs() {return args;}
+			std::vector<EffectArgument>& getArgs() {return args;}
 			int getArgsCount() const {return argsCount;}
-			ArgVis* getArgumentVisuals() {return argsVis;}
-			int_pair* getVisualPositions() {return visualPositions;}
+			std::vector<ArgVis>& getArgumentVisuals() {return argsVis;}
+			std::vector<int_pair>& getVisualPositions() {return visualPositions;}
 			
 			Playbuf(int X, int Y): args({EffectArgument("bufnum", 0), EffectArgument("outbus", OSCConn::getFreeBus()), EffectArgument("trigger", 1.0f), EffectArgument("loop", 0.0f)}),
 			argsVis({ArgVis(VT_TEXT, std::string("")), ArgVis(VT_OUTBUS), ArgVis(VT_SWITCHBUTTON, 1.0f, -1.0f, 3, 2, true), ArgVis(VT_SWITCHBUTTON, 0.0f, 1.0f, 3, 2, false)}),
@@ -1053,10 +1053,10 @@
 			int bufnum=-1;
 			static const int argsCount=4;
 			
-			EffectArgument args[argsCount];
-			ArgVis argsVis[argsCount];
+			std::vector<EffectArgument> args;
+			std::vector<ArgVis> argsVis;
 			
-			int_pair visualPositions[argsCount];
+			std::vector<int_pair> visualPositions;
 			
 			void constructor(int X, int Y)
 			{
@@ -1096,10 +1096,10 @@
 			const char* getFullName() const {return fullName;}
 			static constexpr const char* name="eff_recordbuf";
 			const char* getName() const {return name;}
-			EffectArgument* getArgs() {return args;}
+			std::vector<EffectArgument>& getArgs() {return args;}
 			int getArgsCount() const {return argsCount;}
-			ArgVis* getArgumentVisuals() {return argsVis;}
-			int_pair* getVisualPositions() {return visualPositions;}
+			std::vector<ArgVis>& getArgumentVisuals() {return argsVis;}
+			std::vector<int_pair>& getVisualPositions() {return visualPositions;}
 			
 			Recordbuf(int X, int Y): args({EffectArgument("bufnum", 0), EffectArgument("inbus", OSCConn::getFreeBus()), EffectArgument("trigger", 1.0f), EffectArgument("loop", 0.0f)}),
 			argsVis({ArgVis(VT_TEXT, std::string("")), ArgVis(VT_INBUS), ArgVis(VT_SWITCHBUTTON, 1.0f, -1.0f, 3, 2, true), ArgVis(VT_SWITCHBUTTON, 0.0f, 1.0f, 3, 2, false)}),

@@ -198,45 +198,45 @@ bool Effect::receiveKeyboardEvent(SDL_Scancode ){ return false; }
 
 void Effect::setArgument(int argId, int value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 }
 
 void Effect::setArgument(int argId, float value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 }
 
 void Effect::setArgument(int argId, std::string value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 }
 
 void Effect::sendArgument(int argId)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].sendArgument(id);
 }
 
 void Effect::setAndSendArgument(int argId, int value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 	args[argId].sendArgument(id);
 }
 
 void Effect::setAndSendArgument(int argId, float value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 	args[argId].sendArgument(id);
 }
 
 void Effect::setAndSendArgument(int argId, std::string value)
 {
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	args[argId].set(value);
 	args[argId].sendArgument(id);
 }
@@ -286,7 +286,7 @@ void Effect::sendInstance(bool paused)
 	const char* name=getName();
 	msg.pushInt32(id).pushStr(name);
 	int argsCount=getArgsCount();
-	EffectArgument* args=getArgs();
+	std::vector<EffectArgument>& args=getArgs();
 	for(int i=0;i<argsCount;++i)
 	{
 		args[i].addArgumentToMessage(&msg);
