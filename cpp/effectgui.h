@@ -197,7 +197,7 @@
 			ArgVis(const ArgVis& other){
 				visType = other.visType;
 				count = other.count;
-				if(visType == VT_TEXT) data = new std::string(*((std::string*)data));
+				if(visType == VT_TEXT) data = new std::string(*((std::string*)other.data));
 				else{
 					data = malloc(other.getDataSize());
 					memcpy(data, other.data, other.getDataSize());
