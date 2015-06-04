@@ -7,15 +7,15 @@
 const int MAX_EFFECTS_COUNT=1000;
 
 struct EffectEntry{
-	const char* name;
-	const char* group;
-	const char* subgroup;
-	EffectEntry(const char* n, const char* g, const char* s) {name=n; group=g; subgroup=s;}
+	std::string name;
+	std::string group;
+	std::string subgroup;
+	EffectEntry(std::string n, std::string g, std::string s) {name=n; group=g; subgroup=s;}
 };
 
 std::vector<EffectEntry> effectsList;
 
-std::map<const char*, bool, cmpCStr> SCEffectsList;
+std::map<std::string, bool> SCEffectsList;
 
 bool checkEffectsList()
 {
@@ -43,7 +43,7 @@ bool checkEffectsList()
 					
 					fprintf(stderr, "Got effect '%s'", name.c_str());
 					
-					auto it = SCEffectsList.find(name.c_str());
+					auto it = SCEffectsList.find(name);
 					
 					if(it != SCEffectsList.end())
 					{
@@ -75,7 +75,7 @@ bool checkEffectsList()
 		if(!(effect.second)) 
 		{
 			gotAllEffects=false;
-			fprintf(stderr, "Effect '%s' not found on server side!!! Program will be closed!\n", effect.first);
+			fprintf(stderr, "Effect '%s' not found on server side!!! Program will be closed!\n", effect.first.c_str());
 		}
 	}
 	
@@ -186,9 +186,24 @@ Effect::Effect()
 	effectInstanceList.insert(std::pair<int, Effect*>(id, this));
 }
 
+Effect::Effect(std::string name_, std::string fullName_) : 
+	name(name_), fullName(fullName_)
+{	
+	id=lastId++; 
+	effectInstanceList.insert(std::pair<int, Effect*>(id, this));
+}
+
 Effect::~Effect() 
 {
 	effectInstanceList.erase(id);
+}
+
+// Name access methods
+std::string Effect::getName() const{
+	return name;
+}
+std::string Effect::getFullName() const{
+	return fullName;
 }
 
 // By default, events are left unprocessed
@@ -284,8 +299,8 @@ void Effect::sendInstance(bool paused)
 	msg.init("/new_effect_instance_paused");
 	else
 	msg.init("/new_effect_instance");
-	const char* name=getName();
-	msg.pushInt32(id).pushStr(name);
+	std::string name=getName();
+	msg.pushInt32(id).pushStr(name.c_str());
 	int argsCount=getArgsCount();
 	std::vector<EffectArgument>& args=getArgs();
 	for(int i=0;i<argsCount;++i)
@@ -293,7 +308,7 @@ void Effect::sendInstance(bool paused)
 		args[i].addArgumentToMessage(&msg);
 	}
 	
-	fprintf(stderr, "Sending new instance of effect '%s', id: %d\n", name, id);
+	fprintf(stderr, "Sending new instance of effect '%s', id: %d\n", name.c_str(), id);
 	
 	PacketWriter pw;
 	
@@ -310,10 +325,10 @@ void Effect::sendInstance(bool paused)
 void Effect::deleteInstance()
 {
 	Message msg("/delete_effect_instance"); 
-	const char* name=getName();
+	std::string name=getName();
 	msg.pushInt32(id);
 	
-	fprintf(stderr, "Deleting instance of effect '%s', id: %d\n", name, id);
+	fprintf(stderr, "Deleting instance of effect '%s', id: %d\n", name.c_str(), id);
 	
 	PacketWriter pw;
 	
@@ -412,11 +427,11 @@ void Effect::moveBefore(Effect* effect)
 	int secondId=effect->id;
 
 	Message msg("/move_before_effect_instance"); 
-	const char* name=getName();
+	std::string name=getName();
 	msg.pushInt32(id);
 	msg.pushInt32(secondId);
 	
-	fprintf(stderr, "Moving instance of effect '%s', id: %d, before instance of effect '%s', id: %d\n", name, id, effect->getName(), secondId);
+	fprintf(stderr, "Moving instance of effect '%s', id: %d, before instance of effect '%s', id: %d\n", name.c_str(), id, effect->getName().c_str(), secondId);
 	
 	PacketWriter pw;
 	
@@ -435,11 +450,11 @@ void Effect::moveAfter(Effect* effect)
 	int secondId=effect->id;
 
 	Message msg("/move_after_effect_instance"); 
-	const char* name=getName();
+	std::string name=getName();
 	msg.pushInt32(id);
 	msg.pushInt32(secondId);
 	
-	fprintf(stderr, "Moving instance of effect '%s', id: %d, after instance of effect '%s', id: %d\n", name, id, effect->getName(), secondId);
+	fprintf(stderr, "Moving instance of effect '%s', id: %d, after instance of effect '%s', id: %d\n", name.c_str(), id, effect->getName().c_str(), secondId);
 	
 	PacketWriter pw;
 	
@@ -456,10 +471,10 @@ void Effect::moveAfter(Effect* effect)
 void Effect::moveToHead()
 {	
 	Message msg("/move_to_head"); 
-	const char* name=getName();
+	std::string name=getName();
 	msg.pushInt32(id);
 	
-	fprintf(stderr, "Moving instance of effect '%s', id: %d to head\n", name, id);
+	fprintf(stderr, "Moving instance of effect '%s', id: %d to head\n", name.c_str(), id);
 	
 	PacketWriter pw;
 	
@@ -487,7 +502,7 @@ void Effect::saveToFile(const char* filename)
 	for(auto &eff : effectInstanceList)
 	{
 		Effect* effect = eff.second;
-		fprintf(file, "effect %s %d \"", effect->getFullName(), effect->getId());
+		fprintf(file, "effect %s %d \"", effect->getFullName().c_str(), effect->getId());
 		effect->saveData(file);
 		fprintf(file, "\"\n");
 	}
@@ -695,18 +710,19 @@ void EffectCreator::enter()
 		
 		if(getEffect(chosenEffect->name, x, y)==NULL)
 		{
-			if(getController(chosenEffect->name, x, y)==NULL)
+			if(getController(chosenEffect->name.c_str(), x, y)==NULL)
 			{
-				if(strcmp(chosenEffect->name, "PlotTree")==0)
+				// FIXME: This is a very inconsistent treatment of quasi-effects.
+				if(chosenEffect->name == "PlotTree")
 				OSCConn::sendSimpleMessage("/plot_tree");
 				else
-				if(strcmp(chosenEffect->name, "Meter")==0)
+				if(chosenEffect->name == "Meter")
 				OSCConn::sendSimpleMessage("/meter");
 				else
-				if(strcmp(chosenEffect->name, "FreqScope")==0)
+				if(chosenEffect->name == "FreqScope")
 				OSCConn::sendSimpleMessage("/freqscope");
 				else
-				fprintf(stderr, "Error: No Effect, Controller or anything else called '%s'\n", chosenEffect->name);
+				fprintf(stderr, "Error: No Effect, Controller or anything else called '%s'\n", chosenEffect->name.c_str());
 			}
 		}
 	}
@@ -727,21 +743,21 @@ void EffectCreator::init()
 	chosenEffect=new EffectCreatorMenuEntry("", NULL, false);
 	for(auto &eff : effectsList)
 	{
-		const char* name = eff.name;
-		const char* group = eff.group;
-		const char* subgroup = eff.subgroup;
+		std::string name = eff.name;
+		std::string group = eff.group;
+		std::string subgroup = eff.subgroup;
 		
 		
-		if(chosenEffect->submenuEntries->empty() || strcmp(chosenEffect->submenuEntries->back()->name, group)!=0)
+		if(chosenEffect->submenuEntries->empty() || chosenEffect->submenuEntries->back()->name != group)
 		{
 			chosenEffect->submenuEntries->push_back(new EffectCreatorMenuEntry(group, chosenEffect, false));
 		}
 		auto mapIt=--chosenEffect->submenuEntries->end();
 		
-		if(subgroup!=NULL)
+		if(subgroup!="")
 		{
 			
-			if((*mapIt)->submenuEntries->empty() || strcmp((*mapIt)->submenuEntries->back()->name, subgroup)!=0)
+			if((*mapIt)->submenuEntries->empty() || (*mapIt)->submenuEntries->back()->name != subgroup)
 			{
 				(*mapIt)->submenuEntries->push_back(new EffectCreatorMenuEntry(subgroup, (*mapIt), false));
 			}
@@ -828,8 +844,8 @@ void EffectCreator::receiveKeyboardEvent(SDL_Scancode scancode)
 	}
 }
 
-void registerEffect(const char* name, const char* fullName, const char* group, const char* subgroup) 
+void registerEffect(std::string name, std::string fullName, std::string group, std::string subgroup) 
 {
-	SCEffectsList.insert(std::pair<const char*, bool>(name, false));
+	SCEffectsList.insert(std::pair<std::string, bool>(name, false));
 	effectsList.push_back(EffectEntry(fullName, group, subgroup));
 }

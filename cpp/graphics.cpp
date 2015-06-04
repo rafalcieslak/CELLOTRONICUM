@@ -157,6 +157,11 @@ SDL_Texture* generateText(const char* text, SDL_Color color)
 
 	return tex;
 }
+	
+SDL_Texture* generateText(std::string text, SDL_Color color)
+{
+	return generateText(text.c_str(),color);
+}
 
 SDL_Texture* generateVerticalText(const char* text, SDL_Color color)
 {

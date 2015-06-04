@@ -239,6 +239,9 @@
 		
 		virtual std::vector<ArgVis>& getArgumentVisuals()=0; ///opisy wizualizacji argumentów (do implementacji przez konkretne efekty)
 		
+		EffectGUI(){}
+		EffectGUI(std::string name, std::string fullName) : Effect(name, fullName){}
+		
 		///inicializuje GUI (do wrzucenia w konstruktor efektu)
 		void initGUI(int X, int Y, int W=0, int H=0)
 		{
@@ -325,7 +328,7 @@
 				}
 			}
 			
-			nameTex=generateText(getFullName());
+			nameTex=generateText(getFullName().c_str());
 		}
 		
 		///deinicializuje GUI (do wrzucenia w destruktor efektu)
@@ -567,6 +570,9 @@
 		{
 			return visualPositions;
 		}
+		
+		EffectAutoGUI(){}
+		EffectAutoGUI(std::string name, std::string fullName) : EffectGUI(name, fullName) {}
 		
 		///inicializacja GUI
 		void initGUI(int X, int Y, int custom_left_padding=left_padding, int custom_right_padding=right_padding)

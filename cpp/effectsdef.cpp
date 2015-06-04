@@ -1,8 +1,8 @@
 #include "effectsdef.h"
 
 
-#define REGISTER_EFFECT(a, b) registerEffect(a::name, a::fullName, b);
-#define REGISTER_EFFECT_EX(a, b, c) registerEffect(a::name, a::fullName, b, c);
+#define REGISTER_EFFECT(a, b) registerEffect(a::registration_name, a::registration_fullname, b);
+#define REGISTER_EFFECT_EX(a, b, c) registerEffect(a::registration_name, a::registration_fullname, b, c);
 
 void registerEffects()
 {
@@ -137,9 +137,9 @@ void registerEffects()
 #undef REGISTER_EFFECT
 #undef REGISTER_EFFECT2
 
-#define EFFECT_BY_NAME(a) if(strcmp(name, a::fullName)==0) return new a(X, Y);
+#define EFFECT_BY_NAME(a) if(name == a::registration_fullname) return new a(X, Y);
 
-Effect* getEffect(const char* name, int X, int Y)
+Effect* getEffect(std::string name, int X, int Y)
 {
 	EFFECT_BY_NAME(DistEcho);
 	EFFECT_BY_NAME(ShiftEcho);

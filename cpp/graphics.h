@@ -51,6 +51,7 @@ int getFontHeight();
 
 ///generuje teksture z tekstem
 SDL_Texture* generateText(const char* text, SDL_Color color=COLOR_TEXT);
+SDL_Texture* generateText(std::string text, SDL_Color color=COLOR_TEXT);
 ///generuje teksture z pionowym tekstem
 SDL_Texture* generateVerticalText(const char* text, SDL_Color color=COLOR_TEXT);
 

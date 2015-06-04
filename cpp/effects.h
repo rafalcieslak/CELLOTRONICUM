@@ -120,6 +120,8 @@
 			static std::set <std::pair<int, int> > effectTree; ///drzewo połączeń efektów - budowane w metodzie updateTopologicalSequence()
 			int id; ///identyfikator instancji efektu
 			bool paused; ///instancja efektu zpauzowana lub nie
+			const std::string name; // effect name (identifier, has to be unique!)
+			const std::string fullName; // human-readable effect name
 		public:
 		
 			///buduje drzewo połączeń i sortuje topologicznie efekty, a następnie wysyła tę kolejność do SC
@@ -148,6 +150,7 @@
 			virtual void loadData(char* data) = 0;
 		
 			Effect();
+			Effect(std::string name, std::string fullName);
 			
 			virtual ~Effect();
 			
@@ -155,9 +158,9 @@
 			int getId() {return id;}
 			
 			///zwraca nazwe taką samą jak nazwa efektu w SC (do implementacji przez konkretne efekty)
-			virtual const char* getName() const = 0;
+			virtual std::string getName() const;
 			///zwraca nazwę do wyświetlenia w GUI - używana jest także do identyfikacji więc nie można powtarzać tych samych nazw! (do implementacji przez konkretne efekty)
-			virtual const char* getFullName() const = 0;
+			virtual std::string getFullName() const;
 			///Zwraca tablice z argumentami efektu (do implementacji przez konkretne efekty)
 			virtual std::vector<EffectArgument>& getArgs() = 0;
 			///Zwraca ilość argumentów (do implementacji przez konkretne efekty)
@@ -208,7 +211,7 @@
 	struct EffectCreatorMenuEntry
 	{
 		std::vector <EffectCreatorMenuEntry*>* submenuEntries=NULL; ///wierzchołki wychodzące
-		const char* name; ///nazwa wpisu
+		std::string name; ///nazwa wpisu
 		SDL_Texture* nameTex; ///tekstura w wyrenderowaną nazwą
 		SDL_Texture* nameTexRed; ///tekstura w wyrenderowaną nazwa (wersja zaznaczona)
 		EffectCreatorMenuEntry* parent=NULL; ///wierzchołek z którego wychodzi ten wierzchołek
@@ -230,7 +233,7 @@
 		}
 		
 		///Konstruktor. Parametry kolejno: nazwa, wierzchołek ojciec, czy jest elementem (jeżeli jest to jego nazwa musi pokrywać się z jakimś efektem lub kontrolerem)
-		EffectCreatorMenuEntry(const char* n, EffectCreatorMenuEntry* p, bool isElement)
+		EffectCreatorMenuEntry(std::string n, EffectCreatorMenuEntry* p, bool isElement)
 		{
 			name=n;
 			parent=p;
@@ -285,6 +288,6 @@
 	std::map <int, Effect*>* getEffectInstanceList();
 	
 	///rejestruje efekty na liście (efekty, a nie ich instancję). Jako paramentry podaję się nazwę z SC, pełną nazwę
-	void registerEffect(const char* name, const char* fullName, const char* group, const char* subgroup=NULL);
+	void registerEffect(std::string name, std::string fullName, std::string group, std::string subgroup="");
 
 #endif
