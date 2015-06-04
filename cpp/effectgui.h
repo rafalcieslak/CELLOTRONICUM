@@ -59,15 +59,15 @@
 	///Enum na wszystkie obiekty rysowalne 
 	enum VisulalisationType{
 			VT_NONE,
-            VT_INBUS,
-            VT_OUTBUS,
+      VT_INBUS,
+      VT_OUTBUS,
 			VT_FREQ_INBUS,
 			VT_FREQ_OUTBUS,
 			VT_AMP_INBUS,
 			VT_AMP_OUTBUS,
 			VT_FEEDBACK_INBUS,
 			VT_FEEDBACK_OUTBUS,
-            VT_SLIDER,
+      VT_SLIDER,
 			VT_GRADUALSLIDER,
 			VT_ENTRYBOX,
 			VT_SWITCHBUTTON,
@@ -99,16 +99,28 @@
 	
 	///Struktura z opisem wizualizacji danego efektu
 	///W niej zapisana jest informacja o  tym czy argument ma być np. suwakiem czy busem
-    struct ArgVis
+    class ArgVis
     {
+		private:
+			size_t getDataSize() const{
+				switch(visType){
+					case VT_SLIDER: return sizeof(float)*2 + sizeof(int)*2;
+					case VT_SWITCHBUTTON: return sizeof(float)*2 + sizeof(int)*2 + sizeof(bool);
+					case VT_GRADUALSLIDER: return count*sizeof(float);
+					case VT_TEXT: return -1; // N/A
+					default: return 0; // N/A
+				}
+			}
+		public:
         VisulalisationType visType; ///typ obiektu
         void* data=NULL; ///dodatkowo zhardkodowane dane
+				int count = 0; // stores element count for array data types
         
 		///Konstruktor dla visType=VT_SLIDER parametry to początek i koniec przedziału, oraz wysokość i szerokość suwaka
         ArgVis(VisulalisationType, float min, float max, int width=0, int height=0)
         {
 				visType=VT_SLIDER;
-				data=malloc(sizeof(float)*2 + sizeof(int)*2);
+				data=malloc(getDataSize());
 				((float*)data)[0]=min;
 				((float*)data)[1]=max;
 				((int*)(((float*)data)+2))[0]=width;
@@ -119,7 +131,7 @@
 		ArgVis(VisulalisationType, float value1, float value2, int symbol1, int symbol2, bool triger)
         {
 				visType=VT_SWITCHBUTTON;
-				data=malloc(sizeof(float)*2 + sizeof(int)*2 + sizeof(bool));
+				data=malloc(getDataSize());
 				((float*)data)[0]=value1;
 				((float*)data)[1]=value2;
 				((int*)(((float*)data)+2))[0]=symbol1;
@@ -130,15 +142,12 @@
 		///Konstruktor dla visType=VT_GRADUALSLIDER generuje tablicę z liczb całkowitych o podanym przedziale
 		ArgVis(VisulalisationType, int min, int max)
         {
-			int count=max-min+1;
+			count=max-min+1;
 			
 			visType=VT_GRADUALSLIDER;
-            data=malloc(sizeof(int)+count*sizeof(float));
+      data=malloc(getDataSize());
 			
-			*(int*)data=count;
-			
-			float* tab=(float*)(((int*)data)+1);
-			
+			float* tab=(float*)((int*)data);
 
 			for(int i=min;i<=max;++i)
 			{
@@ -149,19 +158,18 @@
 		
 		///Konstruktor dla visType=VT_GRADUALSLIDER, tablica podawana jest w parametrze
 		ArgVis(VisulalisationType, FloatArray floatArray)
-        {
-            visType=VT_GRADUALSLIDER;
-            data=malloc(sizeof(int)+floatArray.count*sizeof(float));
-			
-			*(int*)data=floatArray.count;
-			
-			float* tab=(float*)(((int*)data)+1);
+    {
+      visType=VT_GRADUALSLIDER;
+			count = floatArray.count;
+      data=malloc(getDataSize());
+	
+			float* tab=(float*)((int*)data);
 			
 			for(int i=0;i<floatArray.count;++i)
 			{
 				tab[i]=floatArray.array[i];
 			}
-        }
+    }
 		
 		///Konstruktor dla visType=VT_TEXT, jedynym parametrem jest tekst do wyświetlenia
 		ArgVis(VisulalisationType, std::string str)
@@ -175,18 +183,26 @@
         {
             visType=type;
         }
+
         ~ArgVis()
         {
-            if(visType==VT_SLIDER)
-			free(data);
-			else
-			if(visType==VT_GRADUALSLIDER)
-			free(data);
-			else
-			if(visType==VT_TEXT)
-			delete (std::string*)data;
-			
+          if(visType==VT_SLIDER)
+						free(data);
+					else if(visType==VT_GRADUALSLIDER)
+						free(data);
+					else if(visType==VT_TEXT)
+						delete (std::string*)data;
         }
+        
+			ArgVis(const ArgVis& other){
+				visType = other.visType;
+				count = other.count;
+				if(visType == VT_TEXT) data = new std::string(*((std::string*)data));
+				else{
+					data = malloc(other.getDataSize());
+					memcpy(data, other.data, other.getDataSize());
+				}
+			}
 
     };
 	

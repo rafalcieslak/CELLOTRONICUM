@@ -7,6 +7,7 @@
 #include <map>
 #include <stdarg.h>
 #include <queue>
+#include <cstring>
 #include "osc.h"
 #include "graphics.h"
 #include "drawables.h"
@@ -26,7 +27,6 @@
 		TYPE_INT,
 		TYPE_FLOAT,
 		TYPE_STRING,
-		TYPE_BLOB,
 		TYPES_SIZE
 	};
 	
@@ -36,8 +36,8 @@
 		private:
 		
 			VarType type; ///typ argumentu
-			const char* name; ///nazwa
-			void* value; ///aktualna wartość
+			const char* name = nullptr; ///nazwa
+			void* value = nullptr; ///aktualna wartość
 			
 			///Metoda wrzucająca dane do struktury danych OSC z oscptk
 			void addArgumentToMessage(Message* msg); 
@@ -60,15 +60,53 @@
 			const char* getName() {return name;}
 			
 			///Zwraca wartość przy typu float (Jeżeli to nie jest float to zwróci 0.0f)
-			float getFloatValue() {if(type==TYPE_FLOAT) return *(float*)value; else return 0.0f;}
+			float getFloatValue() const {
+				if(type==TYPE_FLOAT) return *(float*)value;
+				else return 0.0f;
+			}
 			
 			///Zwraca wartość przy typu int (Jeżeli to nie jest int to zwróci 0)
-			int getIntValue() {if(type==TYPE_INT) return *(int*)value; else return 0;}
+			int getIntValue() const {
+				if(type==TYPE_INT) return *(int*)value;
+				else return 0;
+			}
 		
-			EffectArgument(const char* n, int var): name(n) {set(var);}
-			EffectArgument(const char* n, float var): name(n) {set(var);}
-			EffectArgument(const char* n, std::string var): name(n) {set(var);}
+			///Returns the string-type value (If it's not a string, returns "")
+			std::string getStringValue() const {
+				if(type==TYPE_STRING) return *(std::string*)value;
+				else return "";
+			}
+
+			EffectArgument(const char* n, int var){
+				setName(n);
+				set(var);
+			}
+			EffectArgument(const char* n, float var){
+				setName(n);
+				set(var);
+			}
+			EffectArgument(const char* n, std::string var){
+				setName(n);
+				set(var);
+			}
 			
+			void setName(const char* n){
+				// FIXME: A fine example of leaking memory management. But name should
+				// be an std::string anyway, right?
+				if(name) free((void*)name);
+				char* newname = (char *) malloc(strlen(n) + 1);
+				strcpy(newname,n);
+				name = newname;
+			}
+			
+			EffectArgument(const EffectArgument& other){
+				type = other.type;
+				if(type == TYPE_INT) set(other.getIntValue());
+				if(type == TYPE_FLOAT) set(other.getFloatValue());
+				if(type == TYPE_STRING) set(other.getStringValue());
+				setName(other.name);
+			};
+
 			~EffectArgument();
 	};
 		

@@ -84,6 +84,7 @@ bool checkEffectsList()
 
 void EffectArgument::set(int var)
 {
+	//FIXME: How about freeing these pointers at some point?
 	type=TYPE_INT;
 	value=new int(var);
 }
